@@ -143,7 +143,7 @@ export default {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 30%;
+    width: 100%;
   }
 
   .saved-lists-link {

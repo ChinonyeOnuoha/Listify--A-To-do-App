@@ -98,7 +98,7 @@ export default {
     align-items: center;
     justify-content: center;
     text-align: left;
-    padding: 0;
+    padding: 1.5em 0;
   }
 
   header {
@@ -232,12 +232,14 @@ export default {
 
     @media (max-width: 768px) {
 
-        .savedList-container{
-        padding: 0 1em;
-        }
+    .savedList-container{
+      padding: 16px;
+      height: 100%;
+      margin: 0;
+      overflow-x: hidden;
+      }
     .saved-lists {
       width: 95%; 
-      padding: 1em; 
     }
 
     header {
