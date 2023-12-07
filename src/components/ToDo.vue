@@ -65,11 +65,11 @@ export default {
       nextTodoId: 0,
       savedLists: [],
       placeholders: [
-        "Oga Boss 🙌🏾, wetin you wan drop for list as e dey hot?",
-        "Which level be the next move for your master plan?",
+        "Boss 🙌🏾, wetin you wan drop 4 list as e dey hot?",
+        "Next move for your master plan nkor?",
         "Add another one 🎵 - Like DJ Khaled talk",
         "You still get? No shaking, space dey!",
-        "De carry go, just dey drop am, just dey drop am..",
+        "Carry go, just dey drop am,dey drop am..",
         "De fire down aje! nothing do you 🚀",   
       ]
     };
@@ -441,6 +441,16 @@ input[type="checkbox"] {
     position:relative;
     margin-bottom: 2rem;
   }
+
+  .title {
+  color: #73204F;
+  font-family: Caladea;
+  font-size: 1em;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin-bottom:1.5em;
+}
 
   .new-todo-input {
     width: 100%; 

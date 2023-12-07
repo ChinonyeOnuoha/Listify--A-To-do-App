@@ -98,7 +98,7 @@ export default {
     align-items: center;
     justify-content: center;
     text-align: left;
-    min-height: 100vh;
+    padding: 0;
   }
 
   header {
@@ -129,7 +129,7 @@ export default {
   .saved-lists{
     font-size: 2rem;
     background-color: #FEEDE1CC;
-    width: 80%; 
+    width: 85%; 
     max-width: 600px; 
     padding: 1em; 
   }
@@ -150,7 +150,7 @@ export default {
     justify-content: center;
     padding: 0;
     margin: 0;
-    max-width: 90%;
+    max-width: 94%;
     word-wrap: break-word; 
     overflow-wrap: break-word;
   }
@@ -231,6 +231,10 @@ export default {
     }
 
     @media (max-width: 768px) {
+
+        .savedList-container{
+        padding: 0 1em;
+        }
     .saved-lists {
       width: 95%; 
       padding: 1em; 
@@ -244,6 +248,17 @@ export default {
     h1 {
       margin-bottom: 0.5em; 
       font-size: 24px;
+    }
+
+    .delete-btn {
+    position: absolute;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-self: flex-end;
+    font-size: 16px;
+    text-shadow: 1px 1px 2px black;
     }
     }
 
