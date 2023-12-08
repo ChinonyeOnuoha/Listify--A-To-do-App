@@ -1,11 +1,16 @@
 <template>
 
-<notification-alert ref="notificationRef"></notification-alert>
+    <notification-alert ref="notificationRef"></notification-alert>
     <div class="todo-app">
 
     <!-- Conditional rendering for the title + lists -->
     <header class="todo-header">
             <h1 class="title" v-if="todos.length === 0 && savedLists.length === 0">TO-DO APP</h1>
+            <transition name="fade"> 
+                <div v-if="todos.length === 0 && savedLists.length === 0" class="empty-state">
+                <img src="@/assets/MESSAGE_IF_EMPTY_TO_DO_LIST.svg" alt="Start creating lists" class="illustration">
+                </div>
+            </transition>
             <router-link to="/saved" class="saved-lists-link" v-if="savedLists.length > 0">Saved lists</router-link>
             <img src="@/assets/Vector.svg" alt="Highlight" class="highlight-icon" v-if="savedLists.length > 0">
         </header>
@@ -22,32 +27,33 @@
       <button @click="addTodo" class="add-item">Add item</button>
     </header>
 
-    <transition name="fade"> <!-- Transition wrapper -->
-      <div v-if="todos.length === 0 && savedLists.length === 0" class="empty-state">
-        <img src="@/assets/MESSAGE_IF_EMPTY_TO_DO_LIST.svg" alt="Start creating lists" class="illustration">
-        <p class="start-text">Start creating lists</p>
-      </div>
-    </transition>
-
     <transition-group name="fade" tag="ul" class="todo-list">
 
         <li v-for="todo in todos" :key="todo.id" class="todo-item">
-    
-            <input type="checkbox" v-model="todo.done" :id="'todo-' + todo.id" class="todo-checkbox">
-            <label :for="'todo-' + todo.id" class="todo-label"></label>
-            
-        <!-- Toggle between text and input for editing -->
-        <span v-if="!todo.editing" :class="{ 'todo-text': true, done: todo.done }">{{ todo.text }}</span>
-        <input v-else type="text" v-model="todo.text" @keyup.enter="todo.editing = false" class="todo-edit-input">
-        
-        <div class="actions">
-          <button @click="todo.editing = !todo.editing" class="action-btn edit-btn">&#9998;</button>
-          <button @click="deleteTodo(todo.id)" class="action-btn delete-btn">&#10060;</button>
-        </div>
-      </li>
+            <div class="todo-content">
+              <input type="checkbox" v-model="todo.done" :id="'todo-' + todo.id" class="todo-checkbox">
+              <span v-if="!todo.editing" :class="{ 'todo-text': true, done: todo.done }">{{ todo.text }}</span>
+              <textarea 
+                  v-else 
+                  ref="editInput" 
+                  v-model="todo.text" 
+                  @keyup.enter="finishEditing(todo)" 
+                  @input="adjustTextAreaHeight($event.target)" 
+                  class="todo-edit-textarea">             
+              </textarea>
+            </div>
+            <div class="actions">
+                <button v-show="!todo.editing" @click="editTodo(todo)" class="action-btn edit-btn"><font-awesome-icon :icon="['fas', 'pen-to-square']" />
+                </button>
+                <button v-show="!todo.editing" @click="deleteTodo(todo.id)" class="action-btn delete-btn"><font-awesome-icon :icon="['fas', 'trash']" /></button>
+                <button v-show="todo.editing" @click="saveEdit(todo)" class="action-btn save-btn"><font-awesome-icon :icon="['fas', 'check']" /></button>
+                <button v-show="todo.editing" @click="cancelEdit(todo)" class="action-btn cancel-btn"><font-awesome-icon :icon="['fas', 'xmark']" /></button>
+            </div>
+
+        </li>
     </transition-group>
 
-    <button v-if="todos.length" @click="saveList" class="save-btn">Save list</button>
+    <a v-if="todos.length" href="#" @click="saveList" class="save-btn">Save list</a>
   </div>
 </template>
 
@@ -83,7 +89,6 @@ export default {
     
   computed: {
     dynamicPlaceholder() {
-      // Returns the placeholder based on the number of todos or the last one if more than 5 todos are added
       let count = this.todos.length;
       if (count >= this.placeholders.length) return this.placeholders[this.placeholders.length - 1];
       return this.placeholders[count];
@@ -110,7 +115,7 @@ export default {
         const timestamp = new Date().toISOString();
         this.savedLists.push({ timestamp, todos: [...this.todos] });
         localStorage.setItem('savedLists', JSON.stringify(this.savedLists));
-        this.todos = []; // Clear current list
+        this.todos = []; 
         this.$refs.notificationRef.showNotification('List saved successfully!');    
         },
 
@@ -118,14 +123,36 @@ export default {
         if (method === 'date') {
         this.savedLists.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
         }
+        },
+
+        saveEdit(todo) {
+        todo.editing = false;
+        },
+
+        cancelEdit(todo) {
+          todo.text = this.originalTodoText; 
+          todo.editing = false;
+        },
+
+        editTodo(todo) {
+          this.originalTodoText = todo.text; 
+          todo.editing = true;
+        },
+
+        finishEditing(todo) {
+        todo.editing = false;
+        },
+
+        adjustTextAreaHeight(textareaElement) {
+        textareaElement.style.height = 'auto';
+        textareaElement.style.height = textareaElement.scrollHeight + 'px';
+        }       
     }
-  }
 }
 </script>
 
 
 <style scoped>
-
 .todo-app {
   background: linear-gradient(95deg, #FFE3E3 0.17%, #FFF0F5 100%);
   color: #73204F;
@@ -150,7 +177,7 @@ export default {
     display: flex;
     justify-content: center;
     text-decoration: none;
-    color: #73204F; 
+    color:#73204F; 
     font-family: Caladea;
     font-size: 1.3em;
     font-style: normal;
@@ -161,7 +188,7 @@ export default {
     margin-right: 20px; 
     margin-bottom: 3rem;
     width: 100px; 
-    color: #812F67;
+    color:#812F67;
     height: auto; 
   }
 
@@ -177,7 +204,6 @@ export default {
   margin: 0 auto;
 }
 
-
 .title {
   color: #73204F;
   font-family: Caladea;
@@ -185,7 +211,6 @@ export default {
   font-style: normal;
   font-weight: 700;
   line-height: normal;
-  margin-bottom:3em;
 }
 
 .start-text{
@@ -197,7 +222,6 @@ export default {
   font-weight: 400;
   line-height: normal;
 }
-
 
 .add-item {
   position: absolute;
@@ -220,12 +244,9 @@ export default {
   white-space: nowrap;
 }
 
-
 .add-item:hover {
-  background: #653F4A;
-  
+  background: #653F4A; 
 }
-
 .new-todo-input{
   border-radius: 50px;
   border:none;
@@ -246,26 +267,19 @@ export default {
 .illustration-box {
   position: relative;
 }
-
-
 .empty-state {
   text-align: center;
 }
-
 .illustration {
   max-width: 100%;
   height: auto;
-  margin-top: 5em;
-}
-
-.start-text {
-  margin-top: 20px;
+  margin-bottom:2em;
 }
 
 .todo-list {
   list-style-type: none;
   padding: 0;
-  margin: 4em auto;
+  margin-top: 4em;
   width: 100%;
   max-width: 45em;
   
@@ -275,17 +289,27 @@ export default {
   background-color: #F9DCCF;
   color: #73204F;
   margin-bottom: 10px;
-  padding: 10px 10px 10px 0;
+  padding: 8px 8px 30px 0;
   border-radius: 4px;
   display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   font-size: 18px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
-  align-items: center;
+  align-items: flex-start;
   position: relative;
   
 }
+
+.todo-content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start; 
+  flex-grow: 1;
+}
+
 
 input[type="checkbox"] {
   margin-left: 16px; 
@@ -293,35 +317,49 @@ input[type="checkbox"] {
 
 .todo-text {
   flex-grow: 1;
+  text-align: left; 
+  padding-right: 10px;
 }
-
 
 .todo-text.done {
   text-decoration: line-through;
 }
 
-
 .todo-text,
-.todo-edit-input {
-  margin-left: 16px; 
+.todo-edit-textarea {
   flex-grow: 1; 
   text-align: left; 
+  width: auto;
 }
 
 .actions {
   display: flex;
   position: absolute; 
   right: 10px; 
-  top: 50%; 
+  bottom: 5px; 
   transform: translateY(-50%); 
-  gap: 10px; 
 }
 
 .action-btn {
   background-color: transparent;
   border: none;
   cursor: pointer;
-  color: #73204F;
+  color: #730505;
+}
+
+.save-btn{
+    background-color: transparent;
+    color: green;
+    font-size: 18px;
+    border: none;
+    cursor: pointer;
+}
+.cancel-btn{
+    background-color: transparent;
+    color: #730505;
+    font-size: 18px;
+    border: none;
+    cursor: pointer;
 }
 
 .todo-item .edit-btn,
@@ -337,59 +375,31 @@ input[type="checkbox"] {
 
 .delete-btn {
   background-color: transparent;
-  color: #73204F;
+  color: #730505;
   border: none;
   cursor: pointer;
 }
 
 .edit-btn{
   background-color: transparent;
-  color: #73204F;
-  font-size: 18px;
+  color: #730505;
+  font-size: 16px;
   border: none;
   cursor: pointer;
 }
 
-
 .todo-checkbox {
-  display: none; 
-}
-
-.todo-label {
-  position: relative;
-  display: inline-block;
-  width: 24px;
-  height: 24px;
-  background: #73204F;
-  border: 2px solid transparent;
-  border-radius: 5px;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
   cursor: pointer;
-  background-image: linear-gradient(#73204F, #73204F), 
-                    linear-gradient(to right, #632329, #F25551, #50F283CC);
-  background-origin: border-box;
-  background-clip: content-box, border-box;
-  margin-left: 16px;
 }
-
-
-.todo-checkbox:checked + .todo-label::after {
-  content: '';
-  position: absolute;
-  left: 8px;
-  top: 3px;
-  width: 6px;
-  height: 12px;
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
-}
-
 
 .transition-enter-active, .transition-leave-active {
   transition: opacity 0.5s;
 }
 
-.transition-enter, .transition-leave-to /* .transition-leave-active in <2.1.8 */ {
+.transition-enter, .transition-leave-to {
   opacity: 0;
 }
 
@@ -403,23 +413,17 @@ input[type="checkbox"] {
   border-color: #FF561E;
 }
 
-
 .save-btn {
   border: none;
-  padding: 10px 20px;
-  border-radius: 20px;
-  margin-left: 10px; 
   cursor: pointer;
-  background: linear-gradient(95deg, #4B1F2D 1.29%, #6B284F 90.56%, #812F67 99.56%);
-  color: white;
+  color: #FF561E;
   font-family: Caladea;
-  font-size: 1rem;
-  transition: background-color 0.3s;
+  font-size: 1.2rem;
+  transition: 0.3s;
 }
 
-.save-btn:hover {
-  background-color: darken(#FF561E, 10%);
-}
+
+
 
 
 /* Mobile responsive styles */
@@ -449,7 +453,6 @@ input[type="checkbox"] {
   font-style: normal;
   font-weight: 700;
   line-height: normal;
-  margin-bottom:1.5em;
 }
 
   .new-todo-input {
@@ -458,7 +461,6 @@ input[type="checkbox"] {
     margin-bottom: 2rem;
     padding-left: 12px;
   }
-
   .add-item {
     width: 40%;
     display: flex;
@@ -473,7 +475,6 @@ input[type="checkbox"] {
     font-size: 18px;
   }
 
-
     ::placeholder{
     font-family: Caladea;
     font-size: 14px;
@@ -482,14 +483,21 @@ input[type="checkbox"] {
     line-height: normal;
 }
 
-
+.save-btn {
+  border: none;
+  cursor: pointer;
+  color: #FF561E;
+  font-family: Caladea;
+  font-size: 1rem;
+  transition: 0.3s;
+}
   .todo-list {
     width: 100%; 
   }
 
   .todo-label{
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
     margin-left: 8px;
   }
 
@@ -505,8 +513,6 @@ input[type="checkbox"] {
     overflow-wrap: break-word;
     
   }
-
-
   .saved-lists-link{
     color: #73204F;
     font-family: Caladea;
@@ -529,24 +535,14 @@ input[type="checkbox"] {
   display: flex;
   position: absolute; 
   right: 3px; 
-  top: 70%; 
+  bottom: 5px; 
   gap: 0px;
-  font-size: 15px;
-  }
-
-  .todo-checkbox:checked + .todo-label::after {
-    left: 50%;
-    top: 40%;
-    transform: translate(-50%, -50%) rotate(45deg);
+  font-size: 14px;
   }
 
   .illustration {
     width: 70%; 
     height: auto;
-  }
-
-  .empty-state img {
-    margin-top: 40px;
   }
 
   .start-text {

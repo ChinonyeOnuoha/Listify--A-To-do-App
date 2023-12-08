@@ -4,9 +4,9 @@
         <p>{{ message }}</p>
       </div>
     </transition>
-  </template>
+</template>
   
-  <script>
+<script>
   export default {
     data() {
       return {
@@ -24,9 +24,9 @@
       }
     }
   };
-  </script>
+</script>
   
-  <style scoped>
+<style scoped>
   .notification {
     position: fixed;
     top: 20px;
@@ -58,5 +58,5 @@
   }
 }
 
-  </style>
+</style>
   

@@ -4,28 +4,36 @@
           <h1><router-link to="/">TO-DO APP</router-link></h1>
         </header>
         <div class="saved-lists">
-        <ol>
-        <li v-for="(list, listIndex) in savedLists" :key="listIndex">
-          {{ formatDate(list.timestamp) }}
-          <button @click="deleteList(listIndex)" class="action-btn delete-btn">&#128465;</button>
-          <ul>
-            <li v-for="(todo, todoIndex) in list.todos" :key="todo.id">
-              <div v-if="currentlyEditingIndex && currentlyEditingIndex.listIndex === listIndex && currentlyEditingIndex.todoIndex === todoIndex">
-                <input v-model="editCache" />
-                <button @click="saveEdit(listIndex, todoIndex)" class="save-btn">&#10003;</button>
-                <button @click="cancelEdit" class="cancel-btn">&#10060;</button>
-              </div>
-              <div v-else>
-                {{ todo.text }}
-                <button @click="startEdit(listIndex, todoIndex)" class="edit-btn">&#9998;</button>
-              </div>
-            </li>
-          </ul>
-        </li>
-      </ol>
+            <ol>
+              <h3 v-if="savedLists.length > 0">Your saved list 👇🏾</h3>
+                <li v-for="(list, listIndex) in savedLists" :key="listIndex">
+                  {{ formatDate(list.timestamp) }}
+                  <button @click="deleteList(listIndex)" class="action-btn delete-btn"><font-awesome-icon :icon="['fas', 'trash']" /></button>
+                  <ul>
+                    <li v-for="(todo, todoIndex) in list.todos" :key="todo.id">
+                      <div v-if="currentlyEditingIndex && currentlyEditingIndex.listIndex === listIndex && currentlyEditingIndex.todoIndex === todoIndex">
+                        <input v-model="editCache" />
+                        <button @click="saveEdit(listIndex, todoIndex)" class="save-btn"><font-awesome-icon :icon="['fas', 'check']" /></button>
+                        <button @click="cancelEdit" class="cancel-btn"><font-awesome-icon :icon="['fas', 'xmark']" /></button>
+                      </div>
+                      <div v-else>
+                        {{ todo.text }}
+                        <button @click="startEdit(listIndex, todoIndex)" class="edit-btn"><font-awesome-icon :icon="['fas', 'pen-to-square']" /></button>
+                      </div>
+                    </li>
+                  </ul>
+                </li>
+            </ol>
+        </div>
     </div>
-    </div>
-  </template>
+    <transition name="fade">
+        <div v-if="savedLists.length === 0" class="empty-state">
+          <img src="@/assets/MESSAGE_IF_EMPTY_TO_DO_LIST2.svg" alt="No saved lists" class="illustration">
+          <p class="start-text">You don't have any saved lists yet!</p>
+        </div>
+    </transition>
+
+</template>
   
 <script>
 
@@ -121,6 +129,17 @@ export default {
     line-height: normal; 
   }
 
+  h3{
+    font-family: Caladea;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal; 
+    color: #4B1F2D;
+    text-align: center;
+    padding-top: 40px;
+  }
+
   a{
     text-decoration: none;
     color: #73204F;
@@ -128,7 +147,6 @@ export default {
 
   .saved-lists{
     font-size: 2rem;
-    background-color: #FEEDE1CC;
     width: 85%; 
     max-width: 600px; 
     padding: 1em; 
@@ -162,15 +180,15 @@ export default {
   .saved-lists li ul li {
     font-weight: normal; 
     margin-bottom: 6px; 
+    max-width: 94%;
   }
-
 
 
   li{
     font-size: 1rem;
     background-color: #F9DCCF;
     border-radius: 8px; 
-    margin-bottom: 1em; 
+    margin-bottom: .5em; 
     padding: 1rem; 
     position: relative; 
     display: flex; 
@@ -184,12 +202,9 @@ export default {
     cursor: pointer;
     }  
     
-    .edit-btn, .delete-btn, .save-btn, .cancel-btn {
-    margin: 0 0.5em; 
-}
     .edit-btn{
     background-color: transparent;
-    color: #73204F;
+    color: #730505;
     font-size: 18px;
     border: none;
     cursor: pointer;
@@ -198,6 +213,7 @@ export default {
     .delete-btn {
     position: absolute;
     background-color: transparent;
+    color: #730505;
     border: none;
     cursor: pointer;
     display: flex;
@@ -209,14 +225,15 @@ export default {
     .save-btn{
         background-color: transparent;
         color: green;
-        font-size: 20px;
+        font-size: 18px;
         border: none;
         cursor: pointer;
     }
 
     .cancel-btn{
         background-color: transparent;
-        color: black;
+        color: #730505;
+        font-size: 18px;
         border: none;
         cursor: pointer;
 
@@ -230,8 +247,27 @@ export default {
     padding: 0.25em 0.5em; 
     }
 
-    @media (max-width: 768px) {
+.empty-state {
+  text-align: center;
+  padding: 4em;
+}
 
+.empty-state img {
+  max-width: 100%;
+  height: auto;
+}
+
+.empty-state .start-text {
+  color: #73204F;
+  font-family: Caladea;
+  font-size: 1em;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
     .savedList-container{
       padding: 16px;
       height: 100%;
@@ -241,7 +277,7 @@ export default {
     .saved-lists {
       width: 95%; 
     }
-
+    
     header {
       flex-direction: column; 
       align-items: center; 
