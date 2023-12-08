@@ -325,6 +325,7 @@ input[type="checkbox"] {
   flex-grow: 1;
   text-align: left; 
   padding-right: 10px;
+  max-width: calc(100% - 24px);
 }
 
 .todo-text.done {
@@ -345,7 +346,7 @@ input[type="checkbox"] {
   display: flex;
   position: absolute; 
   right: 8px; 
-  bottom:4; 
+  bottom:4px; 
   transform: translateY(-50%); 
 }
 
@@ -444,6 +445,7 @@ input[type="checkbox"] {
     align-items: center;
     justify-content: center;
     padding:0 5%;
+    overflow-x: hidden; 
     
   } 
 
@@ -524,7 +526,7 @@ input[type="checkbox"] {
   }
 
   .todo-item, .todo-content, .actions {
-    min-width: 0; /* This helps with handling overflow on smaller screens */
+    min-width: 0; 
   }
   .saved-lists-link{
     color: #73204F;

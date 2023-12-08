@@ -51,6 +51,7 @@ body, html {
   height: 100%;
   margin: 0;
   background: linear-gradient(95deg, #FFE3E3 0.17%, #FFF0F5 100%);
+  overflow-x: hidden; 
 }
 
 </style>
