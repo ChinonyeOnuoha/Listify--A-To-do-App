@@ -46,7 +46,7 @@
                 <button v-show="!todo.editing" @click="editTodo(todo)" class="action-btn edit-btn"><font-awesome-icon :icon="['fas', 'pen-to-square']" />
                 </button>
                 <button v-show="!todo.editing" @click="deleteTodo(todo.id)" class="action-btn delete-btn"><font-awesome-icon :icon="['fas', 'trash']" /></button>
-                <button v-show="todo.editing" @click="saveEdit(todo)" class="action-btn save-btn"><font-awesome-icon :icon="['fas', 'check']" /></button>
+                <button v-show="todo.editing" @click="saveEdit(todo)" class="action-btn save-btn2"><font-awesome-icon :icon="['fas', 'check']" /></button>
                 <button v-show="todo.editing" @click="cancelEdit(todo)" class="action-btn cancel-btn"><font-awesome-icon :icon="['fas', 'xmark']" /></button>
             </div>
 
@@ -163,6 +163,7 @@ export default {
   align-items: center;
   justify-content: center;
   text-align: center;
+  overflow-x: hidden; 
 }
 
 .todo-header {
@@ -193,7 +194,7 @@ export default {
   }
 
 .header {
-  position: relative;
+  position: sticky;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -201,7 +202,10 @@ export default {
   max-width: 50rem;
   padding: 0 1rem;
   box-sizing: border-box;
+  z-index: 10;
   margin: 0 auto;
+  background: inherit;
+  top: 3em;
 }
 
 .title {
@@ -282,6 +286,8 @@ export default {
   margin-top: 4em;
   width: 100%;
   max-width: 45em;
+  overflow-y: auto;
+  max-height: calc(100vh - 4em);
   
 }
 
@@ -325,18 +331,21 @@ input[type="checkbox"] {
   text-decoration: line-through;
 }
 
-.todo-text,
-.todo-edit-textarea {
+.todo-text, .todo-edit-textarea {
   flex-grow: 1; 
   text-align: left; 
   width: auto;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
 }
+
 
 .actions {
   display: flex;
   position: absolute; 
-  right: 10px; 
-  bottom: 5px; 
+  right: 8px; 
+  bottom:4; 
   transform: translateY(-50%); 
 }
 
@@ -347,7 +356,7 @@ input[type="checkbox"] {
   color: #730505;
 }
 
-.save-btn{
+.save-btn2{
     background-color: transparent;
     color: green;
     font-size: 18px;
@@ -427,7 +436,7 @@ input[type="checkbox"] {
 
 
 /* Mobile responsive styles */
-@media (max-width: 650px) {
+@media (max-width: 600px) {
 
   .todo-app{
     display: flex;
@@ -435,6 +444,7 @@ input[type="checkbox"] {
     align-items: center;
     justify-content: center;
     padding:0 5%;
+    
   } 
 
   .header {
@@ -508,10 +518,13 @@ input[type="checkbox"] {
     font-style: normal;
     font-weight: 400;
     margin-left:8px;
-    max-width: 240px;
+    max-width: calc(100% - 24px);
     word-wrap: break-word; 
     overflow-wrap: break-word;
-    
+  }
+
+  .todo-item, .todo-content, .actions {
+    min-width: 0; /* This helps with handling overflow on smaller screens */
   }
   .saved-lists-link{
     color: #73204F;
@@ -534,8 +547,8 @@ input[type="checkbox"] {
   .actions {
   display: flex;
   position: absolute; 
-  right: 3px; 
-  bottom: 5px; 
+  right: 0; 
+  bottom: 0; 
   gap: 0px;
   font-size: 14px;
   }
@@ -548,6 +561,13 @@ input[type="checkbox"] {
   .start-text {
     font-size: 1rem; 
   }
+
+  .todo-checkbox {
+  width: 16px;
+  height: 16px;
+  margin-right: 10px;
+  cursor: pointer;
+}
 
   .todo-item .edit-btn,
   .todo-item .delete-btn {
